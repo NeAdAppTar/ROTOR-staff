@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>ROTOR — Панель руководителя</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="icon.png">
+  <script src="checkleader.js"></script>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="nav-links">
+      <a href="dashboard.html">Главная</a>
+      <a href="employees.html">Сотрудники</a>
+      <a href="results.html">Результаты тестов</a>
+      <a href="charter.html">Устав</a>
+    </div>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </div>
+
+  <div class="dashboard">
+    <div class="tile">
+<h1>Добро пожаловать, <span id="leaderName"></span></h1>
+      <p>Нам по пути!</p>
+    </div>
+
+    <div class="tile important">
+      <p>Стажеры...</p>
+    </div>
+  </div>
+
+  <script>
+    function loadLeader() {
+      const username = localStorage.getItem('username');
+      const role = localStorage.getItem('role');
+
+
+      document.getElementById('leaderName').textContent = username;
+    }
+
+    function logout() {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        document.cookie.split(";").forEach(c => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
+        });
+
+        window.location.href = "https://auth.rotorbus.ru/";
+      } catch (err) {
+        console.error("Ошибка при выходе:", err);
+        window.location.href = "https://auth.rotorbus.ru/";
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadLeader);
+
+
+
+
+
+  </script>
+
+</body>
+</html>
