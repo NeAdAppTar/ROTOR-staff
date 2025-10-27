@@ -18,11 +18,6 @@
 const username = localStorage.getItem('username');
 const role = localStorage.getItem('role');
 
-if (!username || role !== 'leader') {
-  window.location.href = 'https://auth.rotorbus.ru/';
-} else {
-  document.getElementById('leaderName').textContent = username;
-}
 
 function logout() {
   localStorage.clear();
