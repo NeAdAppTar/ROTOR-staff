@@ -21,17 +21,16 @@
 
   <div class="dashboard">
     <div class="tile">
-      <h2>Здравствуйте, <span id="username">Руководитель</span>!</h2>
-      <p>Добро пожаловать в панель управления персоналом.</p>
+      <h2>Работаем, братья</span>!</h2>
+      <p>Нам по пути!</p>
     </div>
 
     <div class="tile important">
-      <p>Вы можете просматривать статистику сотрудников, результаты тестов и управлять доступом.</p>
+      <p>Стажеры...</p>
     </div>
   </div>
 
   <script>
-    // --- Загрузка имени руководителя ---
     function loadLeader() {
       const username = localStorage.getItem('username');
       const role = localStorage.getItem('role');
@@ -40,13 +39,11 @@
       document.getElementById('leaderName').textContent = username;
     }
 
-    // --- Очистка данных при выходе ---
     function logout() {
       try {
         localStorage.clear();
         sessionStorage.clear();
 
-        // очистка всех куки
         document.cookie.split(";").forEach(c => {
           document.cookie = c
             .replace(/^ +/, "")
@@ -61,6 +58,22 @@
     }
 
     window.addEventListener('DOMContentLoaded', loadLeader);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
+  if (!username || role !== 'leader') {
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    document.cookie = "userLogin=; path=/; domain=.rotorbus.ru; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+    window.location.replace('https://auth.rotorbus.ru/');
+  }
+});
+
+
   </script>
 
 </body>
