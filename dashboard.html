@@ -1,22 +1,18 @@
 <!doctype html>
 <html lang="ru">
-
 <head>
   <meta charset="utf-8">
-  <!-- <meta name="viewport" content="width=device-width,initial-scale=1"> -->
-  <title>ROTOR — Панель сотрудника</title>
+  <title>ROTOR — Панель руководителя</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="icon.png">
-  <script src="checkauth.js"></script>
 </head>
 
 <body>
 
-  
   <div class="navbar">
     <div class="nav-links">
-      <a href="employee_dashboard.html">Личный кабинет</a>
-      <a href="employees.html">Список сотрудников</a>
+      <a href="leader_dashboard.html">Главная</a>
+      <a href="employees.html">Сотрудники</a>
       <a href="results.html">Результаты тестов</a>
       <a href="charter.html">Устав</a>
     </div>
@@ -25,94 +21,52 @@
 
   <div class="dashboard">
     <div class="tile">
-      <h3>Никнейм</h3>
-      <p class="highlight" id="nickname">Загрузка...</p>
-    </div>
-
-    <div class="tile">
-      <h3>Статистика всего</h3>
-      <p>Кругорейсов: <span class="highlight" id="totalRoutes">Загрузка...</span></p>
-      <p>Пассажиров: <span class="highlight" id="totalPassengers">Загрузка...</span></p>
-    </div>
-
-    <div class="tile">
-      <h3>Текущий полупериод</h3>
-      <p>Кругорейсов: <span class="highlight" id="periodRoutes">Загрузка...</span></p>
-      <p>Пассажиров: <span class="highlight" id="periodPassengers">Загрузка...</span></p>
-    </div>
-
-    <div class="tile">
-      <h3>Оклад за полупериод</h3>
-      <p class="highlight" id="salary">Загрузка...</p>
+      <h2>Здравствуйте, <span id="leaderName">Руководитель</span>!</h2>
+      <p>Добро пожаловать в панель управления персоналом.</p>
     </div>
 
     <div class="tile important">
-      <p>Водитель, при завершении смены не забывай сдавать маршрутный лист</p>
+      <p>Вы можете просматривать статистику сотрудников, результаты тестов и управлять доступом.</p>
     </div>
-
-    <a href="https://rotorbus.ru/10h1" target="_blank" class="tile important" style="text-decoration: none; color: inherit;">
-      <p>Выплата зарплаты за первый полупериод октября (кликабельно)</p>
-    </a>
-
   </div>
 
   <script>
-    function formatNumber(value) {
-      if (value === null || value === undefined) return '0';
-      const str = String(value).trim();
-      if (str.includes('.')) {
-        const [int, dec] = str.split('.');
-        return dec === '0' ? int : str;
+    // --- Загрузка имени руководителя ---
+    function loadLeader() {
+      const username = localStorage.getItem('username');
+      const role = localStorage.getItem('role');
+
+      if (!username || role !== 'leader') {
+        // если не авторизован или не руководитель — на авторизацию
+        window.location.href = "https://auth.rotorbus.ru/";
+        return;
       }
-      return str;
+
+      document.getElementById('leaderName').textContent = username;
     }
 
-    async function loadDashboard() {
-      const login = localStorage.getItem('userLogin');
-      const nickname = document.getElementById('nickname');
-      const totalRoutes = document.getElementById('totalRoutes');
-      const totalPassengers = document.getElementById('totalPassengers');
-      const periodRoutes = document.getElementById('periodRoutes');
-      const periodPassengers = document.getElementById('periodPassengers');
-      const salary = document.getElementById('salary');
-
-      nickname.textContent = login;
-
+    // --- Очистка данных при выходе ---
+    function logout() {
       try {
-        const response = await fetch('https://rotor.pythonanywhere.com/user_info', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ login })
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // очистка всех куки
+        document.cookie.split(";").forEach(c => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
         });
 
-        if (!response.ok) throw new Error('Ошибка при получении данных');
-
-        const data = await response.json();
-
-        totalRoutes.textContent = formatNumber(data.all_routes);
-        totalPassengers.textContent = formatNumber(data.all_passengers);
-        periodRoutes.textContent = formatNumber(data.half_routes);
-        periodPassengers.textContent = formatNumber(data.half_passengers);
-        salary.textContent = data.salary ? formatNumber(data.salary) + ' ₽' : '0 ₽';
-
-      } catch (error) {
-        totalRoutes.textContent = 'Ошибка';
-        totalPassengers.textContent = 'Ошибка';
-        periodRoutes.textContent = 'Ошибка';
-        periodPassengers.textContent = 'Ошибка';
-        salary.textContent = 'Ошибка';
-        console.error('Ошибка загрузки данных:', error);
+        window.location.href = "https://auth.rotorbus.ru/";
+      } catch (err) {
+        console.error("Ошибка при выходе:", err);
+        window.location.href = "https://auth.rotorbus.ru/";
       }
     }
 
-    function logout() {
-      localStorage.removeItem('userLogin');
-      document.cookie = "userLogin=; path=/; domain=.rotorbus.ru; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      window.location.href = "https://auth.rotorbus.ru/";
-    }
-
-    window.addEventListener('DOMContentLoaded', loadDashboard);
+    window.addEventListener('DOMContentLoaded', loadLeader);
   </script>
-</body>
 
+</body>
 </html>
