@@ -1,33 +1,67 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<title>ROTOR — Панель руководителя</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <title>ROTOR — Панель руководителя</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="icon.png">
 </head>
+
 <body>
 
-<div class="navbar">
-  <button class="logout-btn" onclick="logout()">Выйти</button>
-</div>
+  <div class="navbar">
+    <div class="nav-links">
+      <a href="dashboard.html">Главная</a>
+      <a href="employees.html">Сотрудники</a>
+      <a href="results.html">Результаты тестов</a>
+      <a href="charter.html">Устав</a>
+    </div>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </div>
 
-<h1>Панель руководителя</h1>
-<p>Привет, <span id="leaderName"></span>!</p>
+  <div class="dashboard">
+    <div class="tile">
+      <h2>Здравствуйте, <span id="leaderName">Руководитель</span>!</h2>
+      <p>Добро пожаловать в панель управления персоналом.</p>
+    </div>
 
-<script>
-const username = localStorage.getItem('username');
-const role = localStorage.getItem('role');
+    <div class="tile important">
+      <p>Вы можете просматривать статистику сотрудников, результаты тестов и управлять доступом.</p>
+    </div>
+  </div>
+
+  <script>
+    // --- Загрузка имени руководителя ---
+    function loadLeader() {
+      const username = localStorage.getItem('username');
+      const role = localStorage.getItem('role');
 
 
-function logout() {
-  localStorage.clear();
-  sessionStorage.clear();
-  document.cookie.split(";").forEach(c=>{
-    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
-  });
-  window.location.href = 'https://auth.rotorbus.ru/';
-}
-</script>
+      document.getElementById('leaderName').textContent = username;
+    }
+
+    // --- Очистка данных при выходе ---
+    function logout() {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // очистка всех куки
+        document.cookie.split(";").forEach(c => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/");
+        });
+
+        window.location.href = "https://auth.rotorbus.ru/";
+      } catch (err) {
+        console.error("Ошибка при выходе:", err);
+        window.location.href = "https://auth.rotorbus.ru/";
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadLeader);
+  </script>
 
 </body>
 </html>
